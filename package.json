@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub API 掲示板</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 10px; }
+        form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+        input, textarea, button { padding: 8px; font-size: 16px; }
+        .post { border-bottom: 1px solid #ccc; padding: 10px 0; }
+        .post-title { font-weight: bold; font-size: 18px; }
+        .post-body { color: #333; margin-top: 5px; white-space: pre-wrap; }
+        .post-meta { font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+
+    <h2>GitHub 掲示板</h2>
+
+    <form id="bbsForm">
+        <input type="text" id="title" placeholder="タイトル" required>
+        <textarea id="body" placeholder="本文を入力してください..." rows="4" required></textarea>
+        <button type="submit">投稿する</button>
+    </form>
+
+    <hr>
+
+    <h3>投稿一覧</h3>
+    <div id="posts">読み込み中...</div>
+
+    <script>
+        // 設定（ご自身の情報に書き換えてください）
+        const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN'; 
+        const REPO_OWNER = 'YOUR_USERNAME';
+        const REPO_NAME = 'YOUR_REPO_NAME';
+        
+        const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`;
+
+        // 1. 投稿一覧を取得して表示する関数
+        async function fetchPosts() {
+            const postsContainer = document.getElementById('posts');
+            try {
+                const response = await fetch(`${API_URL}?state=open`, {
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('データの取得に失敗しました');
+
+                const issues = await response.json();
+                postsContainer.innerHTML = '';
+
+                if (issues.length === 0) {
+                    postsContainer.innerHTML = '<p>まだ投稿はありません。</p>';
+                    return;
+                }
+
+                // Issueをループして画面に出力
+                issues.forEach(issue => {
+                    const postEl = document.createElement('div');
+                    postEl.className = 'post';
+                    
+                    const date = new Date(issue.created_at).toLocaleString('ja-JP');
+                    
+                    postEl.innerHTML = `
+                        <div class="post-title">${escapeHTML(issue.title)}</div>
+                        <div class="post-meta">投稿者: ${issue.user.login} | 投稿日時: ${date}</div>
+                        <div class="post-body">${escapeHTML(issue.body)}</div>
+                    `;
+                    postsContainer.appendChild(postEl);
+                });
+
+            } catch (error) {
+                postsContainer.innerHTML = `<p style="color:red;">エラー: ${error.message}</p>`;
+            }
+        }
+
+        // 2. 新しい書き込みを投稿（Issueを作成）する処理
+        document.getElementById('bbsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const body = document.getElementById('body').value;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, body })
+                });
+
+                if (!response.ok) throw new Error('投稿に失敗しました');
+
+                // フォームをクリアして一覧を再読み込み
+                document.getElementById('title').value = '';
+                document.getElementById('body').value = '';
+                alert('投稿が完了しました！');
+                fetchPosts();
+
+            } catch (error) {
+                alert(`エラー: ${error.message}`);
+            }
+        });
+
+        // セキュリティ対策：HTMLエスケープ用関数
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, match => {
+                const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;' };
+                return escape[match];
+            });
+        }
+
+        // 初期読み込み
+        fetchPosts();
+    </script>
+</body>
+</html>

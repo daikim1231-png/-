@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学校掲示板</title>
+    <style>
+        /* 全体のデザイン調整 */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+        }
+        /* 入力フォームのスタイル */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4a90e2;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        /* 投稿一覧のスタイル */
+        .post-list {
+            margin-top: 30px;
+            border-top: 2px solid #eeeff1;
+            padding-top: 20px;
+        }
+        .post {
+            background: #f9fbfd;
+            padding: 15px;
+            border-left: 5px solid #4a90e2;
+            margin-bottom: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 8px;
+        }
+        .post-name {
+            font-weight: bold;
+            color: #333;
+        }
+        .post-content {
+            white-space: pre-wrap; /* 改行を反映させる */
+            font-size: 15px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏫 学校掲示板</h1>
+    
+    <div class="form-group">
+        <label ImgFor="username">ニックネーム</label>
+        <input type="text" id="username" placeholder="例: 2年A組 田中">
+    </div>
+    <div class="form-group">
+        <label ImgFor="message">メッセージ</label>
+        <textarea id="message" rows="4" placeholder="連絡事項や話し合いたいことを入力してください"></textarea>
+    </div>
+    <button id="submit-btn">投稿する</button>
+
+    <div class="post-list" id="post-list">
+        </div>
+</div>
+
+<script>
+    // 画面の要素（パーツ）を取得
+    const submitBtn = document.getElementById('submit-btn');
+    const usernameInput = document.getElementById('username');
+    const messageInput = document.getElementById('message');
+    const postList = document.getElementById('post-list');
+
+    // ページが読み込まれた時に、保存されている過去の投稿を表示する
+    window.onload = function() {
+        loadPosts();
+    };
+
+    // 投稿ボタンがクリックされた時の処理
+    submitBtn.addEventListener('click', function() {
+        const username = usernameInput.value.trim();
+        const message = messageInput.value.trim();
+
+        // 入力チェック（空っぽの場合は警告）
+        if (username === '' || message === '') {
+            alert('ニックネームとメッセージの両方を入力してください。');
+            return;
+        }
+
+        // 現在の日時を取得
+        const now = new Date();
+        const timeString = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        // 新しい投稿データを作成
+        const newPost = {
+            name: username,
+            content: message,
+            time: timeString
+        };
+
+        // ローカルストレージ（ブラウザの保存スペース）に保存
+        savePost(newPost);
+
+        // 画面に投稿を反映
+        addPostToDOM(newPost);
+
+        // 入力欄を空にする
+        messageInput.value = '';
+    });
+
+    // 画面に投稿を生成して追加する関数
+    function addPostToDOM(post) {
+        const postDiv = document.createElement('div');
+        postDiv.classList.add('post');
+
+        postDiv.innerHTML = `
+            <div class="post-header">
+                <span class="post-name">${escapeHTML(post.name)}</span>
+                <span>${post.time}</span>
+            </div>
+            <div class="post-content">${escapeHTML(post.content)}</div>
+        `;
+
+        // 新しい投稿が一番上に来るように追加
+        postList.insertBefore(postDiv, postList.firstChild);
+    }
+
+    // ローカルストレージに投稿を保存する関数
+    function savePost(post) {
+        let posts = JSON.parse(localStorage.getItem('school_board_posts')) || [];
+        posts.push(post);
+        localStorage.setItem('school_board_posts', JSON.stringify(posts));
+    }
+
+    // ローカルストレージから投稿を読み込んで画面に表示する関数
+    function loadPosts() {
+        let posts = JSON.parse(localStorage.getItem('school_board_posts')) || [];
+        // 古い順に保存されているので、画面には新しい順（逆順）で表示する
+        posts.forEach(post => {
+            addPostToDOM(post);
+        });
+    }
+
+    // セキュリティ対策：不正なコードが実行されないように文字を安全なものに変換（エスケープ）
+    function escapeHTML(str) {
+        return str.replace(/[&<>"']/g, function(match) {
+            const escapeMap = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#x27;'
+            };
+            return escapeMap[match];
+        });
+    }
+</script>
+
+</body>
+</html>

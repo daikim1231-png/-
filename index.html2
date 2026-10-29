@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>資格学習サポートアプリ</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Study Planner</p>
+          <h1>資格学習サポート</h1>
+        </div>
+        <button id="resetDataBtn" class="secondary-btn">データ初期化</button>
+      </header>
+
+      <main class="grid">
+        <section class="panel">
+          <h2>受験設定</h2>
+          <form id="examForm">
+            <div class="field">
+              <label for="examName">資格名</label>
+              <input id="examName" type="text" placeholder="例: ITパスポート" />
+            </div>
+
+            <div class="field">
+              <label for="examDate">受験日</label>
+              <input id="examDate" type="date" />
+            </div>
+
+            <div class="field">
+              <label for="targetScore">目標点</label>
+              <input id="targetScore" type="number" min="0" max="100" placeholder="85" />
+            </div>
+
+            <button type="submit" class="primary-btn">保存</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <h2>学習状況</h2>
+          <div class="stats">
+            <div class="stat-card">
+              <span>総学習時間</span>
+              <strong id="totalMinutes">0 分</strong>
+            </div>
+            <div class="stat-card">
+              <span>継続日数</span>
+              <strong id="streak">0 日</strong>
+            </div>
+            <div class="stat-card">
+              <span>弱点分野</span>
+              <strong id="weakArea">-</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel wide">
+          <h2>今日の学習ログ</h2>
+          <form id="studyForm">
+            <div class="row">
+              <div class="field">
+                <label for="studyDate">日付</label>
+                <input id="studyDate" type="date" />
+              </div>
+
+              <div class="field">
+                <label for="studyMinutes">学習時間（分）</label>
+                <input id="studyMinutes" type="number" min="10" step="10" placeholder="30" />
+              </div>
+
+              <div class="field">
+                <label for="studySubject">分野</label>
+                <select id="studySubject">
+                  <option value="基礎理論">基礎理論</option>
+                  <option value="IT技術">IT技術</option>
+                  <option value="マネジメント">マネジメント</option>
+                  <option value="法令">法令</option>
+                  <option value="過去問">過去問</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="studyNote">学習内容</label>
+              <textarea id="studyNote" rows="3" placeholder="例: ネットワークの基礎を復習し、問題10問解いた"></textarea>
+            </div>
+
+            <button type="submit" class="primary-btn">ログを追加</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <h2>学習計画</h2>
+          <form id="taskForm">
+            <div class="field">
+              <label for="taskTitle">やること</label>
+              <input id="taskTitle" type="text" placeholder="例: 過去問 20問" />
+            </div>
+
+            <div class="field">
+              <label for="taskPriority">優先度</label>
+              <select id="taskPriority">
+                <option value="高">高</option>
+                <option value="中" selected>中</option>
+                <option value="低">低</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="taskDeadline">期限</label>
+              <input id="taskDeadline" type="date" />
+            </div>
+
+            <button type="submit" class="primary-btn">追加</button>
+          </form>
+
+          <ul id="taskList" class="task-list"></ul>
+        </section>
+
+        <section class="panel">
+          <h2>間違いノート</h2>
+          <form id="mistakeForm">
+            <div class="field">
+              <label for="mistakeSubject">分野</label>
+              <select id="mistakeSubject">
+                <option value="基礎理論">基礎理論</option>
+                <option value="IT技術">IT技術</option>
+                <option value="マネジメント">マネジメント</option>
+                <option value="法令">法令</option>
+                <option value="過去問">過去問</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="mistakeText">間違えた内容</label>
+              <textarea id="mistakeText" rows="3" placeholder="例: TCP/IPの用語の意味を混同した"></textarea>
+            </div>
+
+            <button type="submit" class="primary-btn">追加</button>
+          </form>
+
+          <ul id="mistakeList" class="mistake-list"></ul>
+        </section>
+
+        <section class="panel wide">
+          <h2>学習進捗</h2>
+          <div class="progress-wrap">
+            <div class="progress-header">
+              <span>今週の達成率</span>
+              <span id="weeklyProgressText">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div id="progressBar"></div>
+            </div>
+          </div>
+
+          <div class="weekly-summary">
+            <div class="mini-card">
+              <span>本日の学習</span>
+              <strong id="todayMinutes">0 分</strong>
+            </div>
+            <div class="mini-card">
+              <span>今週の合計</span>
+              <strong id="weeklyMinutes">0 分</strong>
+            </div>
+            <div class="mini-card">
+              <span>復習件数</span>
+              <strong id="reviewCount">0 件</strong>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

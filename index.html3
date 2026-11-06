@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>資格学習サポートアプリ</title>
+    <style>
+      :root {
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --secondary: #e2e8f0;
+        --secondary-hover: #cbd5e1;
+        --border-color: #e2e8f0;
+        --danger: #ef4444;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        padding: 24px;
+      }
+
+      .app {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .eyebrow {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+      }
+
+      h2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: var(--text-main);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+      }
+
+      .panel {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .panel.wide {
+        grid-column: 1 / -1;
+      }
+
+      .field {
+        margin-bottom: 14px;
+      }
+
+      .field label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: var(--text-muted);
+      }
+
+      input, select, textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background-color: #fff;
+        color: var(--text-main);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      input:focus, select:focus, textarea:focus {
+        border-color: var(--primary);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+      }
+
+      .primary-btn {
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.2s;
+      }
+
+      .primary-btn:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .secondary-btn {
+        background-color: var(--secondary);
+        color: var(--text-main);
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .secondary-btn:hover {
+        background-color: var(--secondary-hover);
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .stat-card, .mini-card {
+        background-color: var(--bg-color);
+        border-radius: 8px;
+        padding: 14px;
+        text-align: center;
+      }
+
+      .stat-card span, .mini-card span {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .stat-card strong, .mini-card strong {
+        font-size: 1.3rem;
+        color: var(--primary);
+      }
+
+      .task-list, .mistake-list {
+        list-style: none;
+        margin-top: 14px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .task-item, .mistake-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.95rem;
+      }
+
+      .task-item.completed span {
+        text-decoration: line-through;
+        color: var(--text-muted);
+      }
+
+      .task-item label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .task-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+      }
+
+      .badge {
+        background-color: var(--secondary);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+      }
+
+      .badge.priority-高 { background-color: #fee2e2; color: #991b1b; }
+      .badge.priority-中 { background-color: #fef3c7; color: #92400e; }
+      .badge.priority-低 { background-color: #e0f2fe; color: #0369a1; }
+
+      .delete-btn {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        cursor: pointer;
+        padding: 0 4px;
+      }
+
+      .delete-btn:hover {
+        color: var(--danger);
+      }
+
+      .empty-text {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+
+      .progress-wrap {
+        margin-bottom: 16px;
+      }
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+
+      .progress-bar {
+        background-color: var(--secondary);
+        height: 10px;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      #progressBar {
+        background-color: var(--primary);
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .weekly-summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Study Planner</p>
+          <h1>資格学習サポート</h1>
+        </div>
+        <button id="resetDataBtn" class="secondary-btn">データ初期化</button>
+      </header>
+
+      <main class="grid">
+        <section class="panel">
+          <h2>受験設定</h2>
+          <form id="examForm">
+            <div class="field">
+              <label for="examName">資格名</label>
+              <input id="examName" type="text" placeholder="例: ITパスポート" />
+            </div>
+
+            <div class="field">
+              <label for="examDate">受験日</label>
+              <input id="examDate" type="date" />
+            </div>
+
+            <div class="field">
+              <label for="targetScore">目標点</label>
+              <input id="targetScore" type="number" min="0" max="100" placeholder="85" />
+            </div>
+
+            <button type="submit" class="primary-btn">保存</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <h2>学習状況</h2>
+          <div class="stats">
+            <div class="stat-card">
+              <span>総学習時間</span>
+              <strong id="totalMinutes">0 分</strong>
+            </div>
+            <div class="stat-card">
+              <span>継続日数</span>
+              <strong id="streak">0 日</strong>
+            </div>
+            <div class="stat-card">
+              <span>弱点分野</span>
+              <strong id="weakArea">-</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel wide">
+          <h2>今日の学習ログ</h2>
+          <form id="studyForm">
+            <div class="row">
+              <div class="field">
+                <label for="studyDate">日付</label>
+                <input id="studyDate" type="date" />
+              </div>
+
+              <div class="field">
+                <label for="studyMinutes">学習時間（分）</label>
+                <input id="studyMinutes" type="number" min="10" step="10" placeholder="30" />
+              </div>
+
+              <div class="field">
+                <label for="studySubject">分野</label>
+                <select id="studySubject">
+                  <option value="基礎理論">基礎理論</option>
+                  <option value="IT技術">IT技術</option>
+                  <option value="マネジメント">マネジメント</option>
+                  <option value="法令">法令</option>
+                  <option value="過去問">過去問</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="studyNote">学習内容</label>
+              <textarea id="studyNote" rows="3" placeholder="例: ネットワークの基礎を復習し、問題10問解いた"></textarea>
+            </div>
+
+            <button type="submit" class="primary-btn">ログを追加</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <h2>学習計画</h2>
+          <form id="taskForm">
+            <div class="field">
+              <label for="taskTitle">やること</label>
+              <input id="taskTitle" type="text" placeholder="例: 過去問 20問" />
+            </div>
+
+            <div class="field">
+              <label for="taskPriority">優先度</label>
+              <select id="taskPriority">
+                <option value="高">高</option>
+                <option value="中" selected>中</option>
+                <option value="低">低</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="taskDeadline">期限</label>
+              <input id="taskDeadline" type="date" />
+            </div>
+
+            <button type="submit" class="primary-btn">追加</button>
+          </form>
+
+          <ul id="taskList" class="task-list"></ul>
+        </section>
+
+        <section class="panel">
+          <h2>間違いノート</h2>
+          <form id="mistakeForm">
+            <div class="field">
+              <label for="mistakeSubject">分野</label>
+              <select id="mistakeSubject">
+                <option value="基礎理論">基礎理論</option>
+                <option value="IT技術">IT技術</option>
+                <option value="マネジメント">マネジメント</option>
+                <option value="法令">法令</option>
+                <option value="過去問">過去問</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="mistakeText">間違えた内容</label>
+              <textarea id="mistakeText" rows="3" placeholder="例: TCP/IPの用語の意味を混同した"></textarea>
+            </div>
+
+            <button type="submit" class="primary-btn">追加</button>
+          </form>
+
+          <ul id="mistakeList" class="mistake-list"></ul>
+        </section>
+
+        <section class="panel wide">
+          <h2>学習進捗</h2>
+          <div class="progress-wrap">
+            <div class="progress-header">
+              <span>今週の達成率</span>
+              <span id="weeklyProgressText">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div id="progressBar"></div>
+            </div>
+          </div>
+
+          <div class="weekly-summary">
+            <div class="mini-card">
+              <span>本日の学習</span>
+              <strong id="todayMinutes">0 分</strong>
+            </div>
+            <div class="mini-card">
+              <span>今週の合計</span>
+              <strong id="weeklyMinutes">0 分</strong>
+            </div>
+            <div class="mini-card">
+              <span>復習件数</span>
+              <strong id="reviewCount">0 件</strong>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // --- アプリケーションの状態管理 ---
+      const STORAGE_KEY = 'study_planner_data';
+
+      let state = loadData();
+
+      function getDefaultState() {
+        return {
+          exam: {
+            name: '',
+            date: '',
+            targetScore: ''
+          },
+          studyLogs: [],
+          tasks: [],
+          mistakes: []
+        };
+      }
+
+      function loadData() {
+        const json = localStorage.getItem(STORAGE_KEY);
+        if (!json) return getDefaultState();
+        try {
+          return JSON.parse(json);
+        } catch (e) {
+          return getDefaultState();
+        }
+      }
+
+      function saveData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      // --- 初期化およびUI反映 ---
+      document.addEventListener('DOMContentLoaded', () => {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const studyDateInput = document.getElementById('studyDate');
+        if (studyDateInput) studyDateInput.value = todayStr;
+
+        initFormValues();
+        renderAll();
+        initEventListeners();
+      });
+
+      function initFormValues() {
+        if (state.exam.name) document.getElementById('examName').value = state.exam.name;
+        if (state.exam.date) document.getElementById('examDate').value = state.exam.date;
+        if (state.exam.targetScore) document.getElementById('targetScore').value = state.exam.targetScore;
+      }
+
+      // --- イベントリスナーの登録 ---
+      function initEventListeners() {
+        document.getElementById('examForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          state.exam.name = document.getElementById('examName').value;
+          state.exam.date = document.getElementById('examDate').value;
+          state.exam.targetScore = document.getElementById('targetScore').value;
+          saveData();
+          alert('受験設定を保存しました！');
+        });
+
+        document.getElementById('studyForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const date = document.getElementById('studyDate').value;
+          const minutes = parseInt(document.getElementById('studyMinutes').value, 10);
+          const subject = document.getElementById('studySubject').value;
+          const note = document.getElementById('studyNote').value;
+
+          if (!date || isNaN(minutes)) {
+            alert('日付と学習時間を正しく入力してください。');
+            return;
+          }
+
+          state.studyLogs.push({ date, minutes, subject, note });
+          saveData();
+          renderAll();
+          e.target.reset();
+          document.getElementById('studyDate').value = new Date().toISOString().split('T')[0];
+        });
+
+        document.getElementById('taskForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const title = document.getElementById('taskTitle').value;
+          const priority = document.getElementById('taskPriority').value;
+          const deadline = document.getElementById('taskDeadline').value;
+
+          if (!title.trim()) {
+            alert('やることのタイトルを入力してください。');
+            return;
+          }
+
+          state.tasks.push({
+            id: Date.now().toString(),
+            title,
+            priority,
+            deadline,
+            completed: false
+          });
+          saveData();
+          renderAll();
+          e.target.reset();
+        });
+
+        document.getElementById('mistakeForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const subject = document.getElementById('mistakeSubject').value;
+          const text = document.getElementById('mistakeText').value;
+
+          if (!text.trim()) {
+            alert('間違えた内容を入力してください。');
+            return;
+          }
+
+          state.mistakes.push({
+            id: Date.now().toString(),
+            subject,
+            text
+          });
+          saveData();
+          renderAll();
+          e.target.reset();
+        });
+
+        document.getElementById('resetDataBtn').addEventListener('click', () => {
+          if (confirm('すべてのデータを初期化してもよろしいですか？')) {
+            localStorage.removeItem(STORAGE_KEY);
+            state = getDefaultState();
+            initFormValues();
+            renderAll();
+            alert('データを初期化しました。');
+          }
+        });
+      }
+
+      // --- 描画処理 ---
+      function renderAll() {
+        renderStats();
+        renderTasks();
+        renderMistakes();
+        renderProgress();
+      }
+
+      function renderStats() {
+        const totalMinutes = state.studyLogs.reduce((sum, log) => sum + log.minutes, 0);
+        document.getElementById('totalMinutes').textContent = `${totalMinutes} 分`;
+
+        const uniqueDays = new Set(state.studyLogs.map(log => log.date)).size;
+        document.getElementById('streak').textContent = `${uniqueDays} 日`;
+
+        if (state.mistakes.length > 0) {
+          const counts = {};
+          state.mistakes.forEach(m => {
+            counts[m.subject] = (counts[m.subject] || 0) + 1;
+          });
+          let maxSubject = '-';
+          let maxCount = 0;
+          for (const [sub, cnt] of Object.entries(counts)) {
+            if (cnt > maxCount) {
+              maxCount = cnt;
+              maxSubject = sub;
+            }
+          }
+          document.getElementById('weakArea').textContent = maxSubject;
+        } else {
+          document.getElementById('weakArea').textContent = '-';
+        }
+      }
+
+      function renderTasks() {
+        const taskList = document.getElementById('taskList');
+        taskList.innerHTML = '';
+
+        if (state.tasks.length === 0) {
+          taskList.innerHTML = '<li class="empty-text">タスクはまだありません</li>';
+          return;
+        }
+
+        state.tasks.forEach(task => {
+          const li = document.createElement('li');
+          li.className = `task-item ${task.completed ? 'completed' : ''}`;
+          li.innerHTML = `
+            <label>
+              <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask('${task.id}')">
+              <span>${escapeHtml(task.title)}</span>
+            </label>
+            <div class="task-meta">
+              <span class="badge priority-${task.priority}">優先度: ${task.priority}</span>
+              ${task.deadline ? `<span class="deadline">期限: ${task.deadline}</span>` : ''}
+              <button class="delete-btn" onclick="deleteTask('${task.id}')">×</button>
+            </div>
+          `;
+          taskList.appendChild(li);
+        });
+      }
+
+      function renderMistakes() {
+        const mistakeList = document.getElementById('mistakeList');
+        mistakeList.innerHTML = '';
+
+        if (state.mistakes.length === 0) {
+          mistakeList.innerHTML = '<li class="empty-text">間違いノートはまだありません</li>';
+          return;
+        }
+
+        state.mistakes.forEach(m => {
+          const li = document.createElement('li');
+          li.className = 'mistake-item';
+          li.innerHTML = `
+            <div>
+              <span class="badge subject-badge">${escapeHtml(m.subject)}</span>
+              <p>${escapeHtml(m.text)}</p>
+            </div>
+            <button class="delete-btn" onclick="deleteMistake('${m.id}')">×</button>
+          `;
+          mistakeList.appendChild(li);
+        });
+      }
+
+      function renderProgress() {
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        const todayMinutes = state.studyLogs
+          .filter(log => log.date === todayStr)
+          .reduce((sum, log) => sum + log.minutes, 0);
+        document.getElementById('todayMinutes').textContent = `${todayMinutes} 分`;
+
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const weeklyMinutes = state.studyLogs
+          .filter(log => new Date(log.date) >= oneWeekAgo)
+          .reduce((sum, log) => sum + log.minutes, 0);
+        document.getElementById('weeklyMinutes').textContent = `${weeklyMinutes} 分`;
+
+        document.getElementById('reviewCount').textContent = `${state.mistakes.length} 件`;
+
+        const targetWeeklyMinutes = 300;
+        let progressPercent = Math.round((weeklyMinutes / targetWeeklyMinutes) * 100);
+        if (progressPercent > 100) progressPercent = 100;
+
+        document.getElementById('weeklyProgressText').textContent = `${progressPercent}%`;
+        document.getElementById('progressBar').style.width = `${progressPercent}%`;
+      }
+
+      // --- グローバル操作関数 ---
+      window.toggleTask = function(id) {
+        const task = state.tasks.find(t => t.id === id);
+        if (task) {
+          task.completed = !task.completed;
+          saveData();
+          renderAll();
+        }
+      };
+
+      window.deleteTask = function(id) {
+        state.tasks = state.tasks.filter(t => t.id !== id);
+        saveData();
+        renderAll();
+      };
+
+      window.deleteMistake = function(id) {
+        state.mistakes = state.mistakes.filter(m => m.id !== id);
+        saveData();
+        renderAll();
+      };
+
+      function escapeHtml(str) {
+        return str.replace(/[&<>'"]/g, 
+          tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+      }
+    </script>
+  </body>
+</html>

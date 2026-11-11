@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">School / Learning</p>
+        <h1>今日の進捗管理</h1>
+      </div>
+      <div>
+        <button class="secondary-btn" type="button">保存</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel">
+        <h2>新しいタスク</h2>
+
+        <div class="field">
+          <label for="taskName">タスク名</label>
+          <input id="taskName" type="text" placeholder="例: 英文法の復習" />
+        </div>
+
+        <div class="field">
+          <label for="taskType">カテゴリ</label>
+          <select id="taskType">
+            <option>宿題</option>
+            <option>復習</option>
+            <option>テスト対策</option>
+            <option>自習</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="taskDetail">メモ</label>
+          <textarea id="taskDetail" placeholder="詳細を入力"></textarea>
+        </div>
+
+        <div class="row">
+          <button class="primary-btn" type="button">追加</button>
+          <button class="secondary-btn" type="button">キャンセル</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>今日の状況</h2>
+
+        <div class="stats">
+          <div class="stat-card">
+            <span>完了</span>
+            <strong>4</strong>
+          </div>
+          <div class="stat-card">
+            <span>進行中</span>
+            <strong>2</strong>
+          </div>
+          <div class="stat-card">
+            <span>残り</span>
+            <strong>3</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel wide">
+        <h2>進捗</h2>
+
+        <div class="progress-wrap">
+          <div class="progress-header">
+            <span>今週の達成率</span>
+            <span>68%</span>
+          </div>
+          <div class="progress-bar">
+            <div id="progressBar"></div>
+          </div>
+        </div>
+
+        <div class="weekly-summary">
+          <div class="mini-card">
+            <span>学習時間</span>
+            <strong>4.5h</strong>
+          </div>
+          <div class="mini-card">
+            <span>課題数</span>
+            <strong>12</strong>
+          </div>
+          <div class="mini-card">
+            <span>改善した点</span>
+            <strong>3</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>タスク一覧</h2>
+
+        <ul class="task-list">
+          <li class="task-item">
+            <div class="task-main">
+              <div class="task-title">英語の単語テスト対策</div>
+              <div class="task-meta">今日 18:00まで</div>
+            </div>
+            <span class="badge high">高</span>
+          </li>
+
+          <li class="task-item">
+            <div class="task-main">
+              <div class="task-title">数学の問題集 10問</div>
+              <div class="task-meta">今日 20:00まで</div>
+            </div>
+            <span class="badge medium">中</span>
+          </li>
+
+          <li class="task-item">
+            <div class="task-main">
+              <div class="task-title">理科のまとめノート作成</div>
+              <div class="task-meta">明日まで</div>
+            </div>
+            <span class="badge low">低</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>ミス・反省</h2>
+
+        <ul class="mistake-list">
+          <li class="mistake-item">
+            <div class="mistake-main">
+              <div class="mistake-text">計算ミスが多かった</div>
+              <div class="mistake-meta">数学</div>
+            </div>
+            <button class="delete-btn" type="button">削除</button>
+          </li>
+
+          <li class="mistake-item">
+            <div class="mistake-main">
+              <div class="mistake-text">暗記の順番がバラバラだった</div>
+              <div class="mistake-meta">英語</div>
+            </div>
+            <button class="delete-btn" type="button">削除</button>
+          </li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
